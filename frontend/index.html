@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="A private local AI assistant powered by Ollama."
+    >
+
+    <title>AI Assistant</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github.min.css"
+>
+
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/lib/highlight.min.js"></script>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <div class="app">
+
+
+        <!-- Sidebar -->
+
+        <aside
+            class="sidebar"
+            id="sidebar"
+        >
+
+
+            <div class="sidebar-header">
+
+                <div class="brand">
+
+                    <div class="brand-icon">
+                        AI
+                    </div>
+
+                    <div>
+                        <div class="brand-title">
+                            AI Assistant
+                        </div>
+
+                        <div class="brand-subtitle">
+                            Local & private
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="closeSidebarButton"
+                    class="icon-button mobile-only"
+                    type="button"
+                    aria-label="Close sidebar"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <button
+                id="newChatButton"
+                class="new-chat-button"
+                type="button"
+            >
+                <span>+</span>
+                New Chat
+            </button>
+
+
+            <div
+                class="chat-history-label"
+            >
+                Recent chats
+            </div>
+
+
+            <div
+                id="chatList"
+                class="chat-list"
+            >
+            </div>
+
+
+            <div class="sidebar-footer">
+
+                <div class="local-status">
+
+                    <span class="status-dot"></span>
+
+                    <span>
+                        Running locally
+                    </span>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- Main -->
+
+        <section class="main">
+
+
+            <!-- Header -->
+
+            <header class="header">
+
+                <button
+                    id="openSidebarButton"
+                    class="icon-button mobile-only"
+                    type="button"
+                    aria-label="Open sidebar"
+                >
+                    ☰
+                </button>
+
+
+                <div class="header-info">
+
+                    <h1>
+                        AI Assistant
+                    </h1>
+
+                    <span>
+                        llama3.2
+                    </span>
+
+                </div>
+
+
+                <div class="header-actions">
+
+                    <span class="online-indicator">
+                        <span class="status-dot"></span>
+                        Local
+                    </span>
+
+                </div>
+
+            </header>
+
+<div class="resume-panel">
+
+    <div class="resume-panel-info">
+
+        <strong>
+            Resume Analyzer
+        </strong>
+
+        <span>
+            Upload your resume to find matching jobs.
+        </span>
+
+    </div>
+
+    <label
+        for="resumeInput"
+        class="resume-upload-button"
+    >
+        Upload Resume
+    </label>
+
+    <input
+        type="file"
+        id="resumeInput"
+        accept=".pdf,.docx,.txt"
+        hidden
+    >
+
+</div>
+
+<div
+    id="resumeProgress"
+    class="resume-progress"
+    hidden
+>
+
+    <div class="resume-progress-header">
+
+        <div>
+
+            <strong id="resumeProgressTitle">
+                Processing resume
+            </strong>
+
+            <span id="resumeProgressStatus">
+                Starting...
+            </span>
+
+        </div>
+
+        <span id="resumeProgressPercent">
+            0%
+        </span>
+
+    </div>
+
+
+    <div class="resume-progress-track">
+
+        <div
+            id="resumeProgressBar"
+            class="resume-progress-bar"
+            style="width: 0%"
+        ></div>
+
+    </div>
+
+
+    <div class="resume-progress-steps">
+
+        <span
+            id="progressStepUpload"
+            class="progress-step"
+        >
+            Upload
+        </span>
+
+        <span
+            id="progressStepExtract"
+            class="progress-step"
+        >
+            Extract
+        </span>
+
+        <span
+            id="progressStepAnalyze"
+            class="progress-step"
+        >
+            Analyze
+        </span>
+
+        <span
+            id="progressStepJobs"
+            class="progress-step"
+        >
+            Find Jobs
+        </span>
+
+        <span
+            id="progressStepMatch"
+            class="progress-step"
+        >
+            Match
+        </span>
+
+        <span
+            id="progressStepDone"
+            class="progress-step"
+        >
+            Done
+        </span>
+
+    </div>
+
+</div>
+
+<div
+    id="jobResults"
+    class="job-results"
+    hidden
+>
+
+    <div class="job-results-header">
+
+        <div>
+
+            <strong>
+                Matching Jobs
+            </strong>
+
+            <span>
+                Jobs discovered from public job boards.
+            </span>
+
+        </div>
+
+        <span
+            id="jobCount"
+            class="job-count"
+        >
+            0 jobs
+        </span>
+
+    </div>
+
+
+    <div
+        id="jobList"
+        class="job-list"
+    ></div>
+
+</div>
+
+            <!-- Chat -->
+
+            <main
+                class="chat-container"
+                id="chatContainer"
+            >
+
+                <div
+                    id="emptyState"
+                    class="empty-state"
+                >
+
+                    <div class="empty-icon">
+                        ✦
+                    </div>
+
+                    <h2>
+                        How can I help?
+                    </h2>
+
+                    <p>
+                        Ask me anything. Your conversations
+                        stay on this device.
+                    </p>
+
+
+                    <div class="suggestions">
+
+                        <button
+                            class="suggestion"
+                            data-message="Explain something interesting to me."
+                        >
+                            <span>💡</span>
+                            Explain something
+                        </button>
+
+
+                        <button
+                            class="suggestion"
+                            data-message="Help me brainstorm some ideas."
+                        >
+                            <span>🧠</span>
+                            Brainstorm ideas
+                        </button>
+
+
+                        <button
+                            class="suggestion"
+                            data-message="Help me write something."
+                        >
+                            <span>✍️</span>
+                            Help me write
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </main>
+
+
+            <!-- Input -->
+
+            <div class="composer-wrapper">
+
+                <form
+                    class="input-area"
+                    id="chatForm"
+                >
+
+                    <textarea
+                        id="messageInput"
+                        rows="1"
+                        placeholder="Message your AI assistant..."
+                        autocomplete="off"
+                    ></textarea>
+
+
+                    <button
+                        type="submit"
+                        id="sendButton"
+                        class="send-button"
+                        aria-label="Send message"
+                    >
+                        ↑
+                    </button>
+
+                </form>
+
+
+                <div class="composer-hint">
+                    <span>
+                        Enter to send
+                    </span>
+
+                    <span>
+                        Shift + Enter for new line
+                    </span>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
